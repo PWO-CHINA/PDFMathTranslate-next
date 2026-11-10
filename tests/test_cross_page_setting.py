@@ -151,6 +151,7 @@ def test_debug_stream_forwards_enabled_setting_to_babeldoc(tmp_path, monkeypatch
     monkeypatch.setattr(high_level, '_get_glossaries', lambda _settings: [])
     monkeypatch.setattr(high_level, 'babeldoc_translate', engine)
     monkeypatch.setattr(high_level, 'supports_experimental_cross_page_context', lambda: True)
+    monkeypatch.setattr(high_level, 'BabelDOCConfig', lambda **kwargs: SimpleNamespace(**kwargs))
     settings = CLIEnvSettingsModel(
         basic={'debug': True},
         translation={'experimental_cross_page_context': True},
