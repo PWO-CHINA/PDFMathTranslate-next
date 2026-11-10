@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import logging
 import logging.handlers
 import multiprocessing
@@ -106,6 +107,32 @@ class SubprocessCrashError(TranslationError):
 
 
 logger = logging.getLogger(__name__)
+
+
+def supports_experimental_cross_page_context() -> bool:
+    """Check the paired Python and native cross-page sentence protocol."""
+    try:
+        from babeldoc import _rust_il
+        from babeldoc.format.pdf import translation_config
+
+        python_protocol = getattr(
+            translation_config, "CROSS_PAGE_SENTENCE_PROTOCOL_VERSION", None
+        )
+        native_protocol = getattr(_rust_il, "CROSS_PAGE_SENTENCE_PROTOCOL_VERSION", None)
+        parameter = inspect.signature(BabelDOCConfig).parameters.get(
+            "experimental_cross_page_context"
+        )
+        return (
+            type(python_protocol) is int
+            and python_protocol == 1
+            and type(native_protocol) is int
+            and native_protocol == 1
+            and parameter is not None
+            and parameter.kind
+            in (inspect.Parameter.POSITIONAL_OR_KEYWORD, inspect.Parameter.KEYWORD_ONLY)
+        )
+    except (ImportError, AttributeError, TypeError, ValueError):
+        return False
 
 
 def _translate_wrapper(
@@ -531,6 +558,15 @@ def _get_glossaries(settings: SettingsModel) -> list[Glossary] | None:
 def create_babeldoc_config(settings: SettingsModel, file: Path) -> BabelDOCConfig:
     if not isinstance(settings, SettingsModel):
         raise ValueError(f"{type(settings)} is not SettingsModel")
+    experimental_options = {}
+    if settings.translation.experimental_cross_page_context:
+        if not supports_experimental_cross_page_context():
+            raise RuntimeError(
+                "The installed BabelDOC does not support experimental cross-page context "
+                "with the required Python and native sentence protocol"
+            )
+        experimental_options["experimental_cross_page_context"] = True
+
     translator = get_translator(settings)
     if translator is None:
         raise ValueError("No translator found")
@@ -578,17 +614,6 @@ def create_babeldoc_config(settings: SettingsModel, file: Path) -> BabelDOCConfi
         from babeldoc.docvision.table_detection.rapidocr import RapidOCRModel
 
         table_model = RapidOCRModel()
-
-    experimental_options = {}
-    if settings.translation.experimental_cross_page_context:
-        import inspect
-
-        parameters = inspect.signature(BabelDOCConfig).parameters
-        if "experimental_cross_page_context" not in parameters:
-            raise RuntimeError(
-                "The installed BabelDOC does not support experimental cross-page context"
-            )
-        experimental_options["experimental_cross_page_context"] = True
 
     babeldoc_config = BabelDOCConfig(
         input_file=file,

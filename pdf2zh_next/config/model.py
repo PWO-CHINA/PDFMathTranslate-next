@@ -97,7 +97,8 @@ class TranslationSettings(BaseModel):
     qps: int = Field(default=4, description="QPS limit for translation service")
     ignore_cache: bool = Field(default=False, description="Ignore translation cache")
     experimental_cross_page_context: bool = Field(
-        default=False, description="Experimentally provide cross-page sentence context"
+        default=False,
+        description="Experimentally translate recognized cross-page continuations as whole sentences",
     )
     custom_system_prompt: str | None = Field(
         default=None,
