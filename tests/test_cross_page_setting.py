@@ -22,6 +22,9 @@ def test_default_and_cli_env_toml_mapping(tmp_path, monkeypatch):
     monkeypatch.setenv('PDF2ZH_EXPERIMENTAL_CROSS_PAGE_CONTEXT', 'true')
     env = manager.parse_env_vars(set(), 0, CLIEnvSettingsModel)
     assert CLIEnvSettingsModel(**env).to_settings_model().translation.experimental_cross_page_context
+    monkeypatch.setenv('PDF2ZH_EXPERIMENTAL_CROSS_PAGE_CONTEXT', 'false')
+    env = manager.parse_env_vars(set(), 0, CLIEnvSettingsModel)
+    assert CLIEnvSettingsModel(**env).to_settings_model().translation.experimental_cross_page_context is False
     config = tmp_path / 'settings.toml'
     config.write_text('[translation]\nexperimental_cross_page_context = true\n', encoding='utf-8')
     toml = manager._read_toml_file(config)
