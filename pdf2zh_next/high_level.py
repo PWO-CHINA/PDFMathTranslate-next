@@ -579,6 +579,17 @@ def create_babeldoc_config(settings: SettingsModel, file: Path) -> BabelDOCConfi
 
         table_model = RapidOCRModel()
 
+    experimental_options = {}
+    if settings.translation.experimental_cross_page_context:
+        import inspect
+
+        parameters = inspect.signature(BabelDOCConfig).parameters
+        if "experimental_cross_page_context" not in parameters:
+            raise RuntimeError(
+                "The installed BabelDOC does not support experimental cross-page context"
+            )
+        experimental_options["experimental_cross_page_context"] = True
+
     babeldoc_config = BabelDOCConfig(
         input_file=file,
         font=None,
@@ -627,6 +638,7 @@ def create_babeldoc_config(settings: SettingsModel, file: Path) -> BabelDOCConfi
         # Term extraction translator (can be different from main translator)
         term_extraction_translator=term_extraction_translator,
         term_pool_max_workers=settings.translation.term_pool_max_workers,
+        **experimental_options,
     )
     return babeldoc_config
 

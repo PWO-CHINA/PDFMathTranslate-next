@@ -1,6 +1,6 @@
 [project]
 name = "pdf2zh-next"
-version = "2.10.2"
+version = "2.10.2+pwo.1.crosspage.1"
 description = "PDF Translator based on BabelDOC"
 authors = [
     { name = "awwaawwa", email = "aw@funstory.ai" },
