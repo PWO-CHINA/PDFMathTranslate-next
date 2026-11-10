@@ -7,6 +7,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import StrictBool
 
 from pdf2zh_next.config.translate_engine_model import (
     TERM_EXTRACTION_ENGINE_SETTING_TYPE,
@@ -96,7 +97,7 @@ class TranslationSettings(BaseModel):
     )
     qps: int = Field(default=4, description="QPS limit for translation service")
     ignore_cache: bool = Field(default=False, description="Ignore translation cache")
-    experimental_cross_page_context: bool = Field(
+    experimental_cross_page_context: StrictBool = Field(
         default=False,
         description="Experimentally translate recognized cross-page continuations as whole sentences",
     )

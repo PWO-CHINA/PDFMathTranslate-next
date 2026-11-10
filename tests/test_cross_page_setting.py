@@ -9,6 +9,7 @@ from pdf2zh_next.config.main import ConfigManager
 from pdf2zh_next.config.main import MagicDefault
 from pdf2zh_next.config.main import build_args_parser
 from pdf2zh_next.config.model import TranslationSettings
+from pydantic import ValidationError
 
 
 def test_default_and_cli_env_toml_mapping(tmp_path, monkeypatch):
@@ -25,6 +26,21 @@ def test_default_and_cli_env_toml_mapping(tmp_path, monkeypatch):
     config.write_text('[translation]\nexperimental_cross_page_context = true\n', encoding='utf-8')
     toml = manager._read_toml_file(config)
     assert CLIEnvSettingsModel(**toml).to_settings_model().translation.experimental_cross_page_context
+
+
+@pytest.mark.parametrize('value', [0, 1, 'true', 'false', None])
+def test_cross_page_config_requires_boolean(value):
+    with pytest.raises(ValidationError):
+        CLIEnvSettingsModel(translation={'experimental_cross_page_context': value})
+
+
+@pytest.mark.parametrize('value', [0, 1, 'true', 'false', None])
+def test_cross_page_mutated_setting_requires_boolean(monkeypatch, value):
+    settings = CLIEnvSettingsModel().to_settings_model()
+    settings.translation.experimental_cross_page_context = value
+    monkeypatch.setattr(high_level, 'get_translator', lambda _settings: pytest.fail('translator initialized'))
+    with pytest.raises(ValueError, match='experimental_cross_page_context must be a bool'):
+        high_level.create_babeldoc_config(settings, Path('synthetic.pdf'))
 
 
 @pytest.mark.parametrize('enabled', [False, True])

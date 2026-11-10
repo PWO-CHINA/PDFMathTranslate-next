@@ -558,6 +558,8 @@ def _get_glossaries(settings: SettingsModel) -> list[Glossary] | None:
 def create_babeldoc_config(settings: SettingsModel, file: Path) -> BabelDOCConfig:
     if not isinstance(settings, SettingsModel):
         raise ValueError(f"{type(settings)} is not SettingsModel")
+    if type(settings.translation.experimental_cross_page_context) is not bool:
+        raise ValueError("experimental_cross_page_context must be a bool")
     experimental_options = {}
     if settings.translation.experimental_cross_page_context:
         if not supports_experimental_cross_page_context():
