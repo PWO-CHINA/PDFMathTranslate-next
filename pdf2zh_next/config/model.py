@@ -7,6 +7,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import StrictBool
 
 from pdf2zh_next.config.translate_engine_model import (
     TERM_EXTRACTION_ENGINE_SETTING_TYPE,
@@ -96,6 +97,10 @@ class TranslationSettings(BaseModel):
     )
     qps: int = Field(default=4, description="QPS limit for translation service")
     ignore_cache: bool = Field(default=False, description="Ignore translation cache")
+    experimental_cross_page_context: StrictBool = Field(
+        default=False,
+        description="Experimentally translate recognized cross-page continuations as whole sentences",
+    )
     custom_system_prompt: str | None = Field(
         default=None,
         description='Custom system prompt for translation. It is mainly used to add the `/no_think` instruction of Qwen 3 in the prompt. e.g. --custom-system-prompt "/no_think You are a professional, authentic machine translation engine."',

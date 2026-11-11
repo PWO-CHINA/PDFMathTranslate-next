@@ -86,6 +86,14 @@ For different use cases, we provide distinct methods to use our program. Check o
 
 For detailed explanations, please refer to our document about [Advanced Usage](https://pdf2zh-next.com/advanced/advanced.html) for a full list of each option.
 
+### Experimental cross-page sentences
+
+Cross-page sentence translation is off by default. Enable it for a translation with `--experimental-cross-page-context`, `PDF2ZH_EXPERIMENTAL_CROSS_PAGE_CONTEXT=true`, or `experimental_cross_page_context = true` under `[translation]` in the configuration file. Both adjacent pages must be selected, and the translator must support LLM requests. The adapter requires matching BabelDOC Python and native cross-page sentence protocol version 1 when this option is enabled; incompatible engines fail instead of silently ignoring the option. Ordinary translations do not require this protocol.
+
+The configuration file and Python API require a boolean value for this option; the environment variable is parsed from text.
+
+For eligible continuations, a compatible engine sends the complete sentence as one translation input, then estimates a split between the two pages from the source lengths. Detection is limited, and reordered translations can place meaning on the wrong side of the page boundary. Unsafe responses can fall back or stop for review; manually inspect both the translation and page boundary. A boundary between separately processed document parts is not a cross-page candidate.
+
 <h2 id="downstream">Secondary Development (APIs)</h2>
 
 <!-- <!-- For downstream applications, please refer to our document about [API Details](./docs/APIS.md) for futher information about: -->

@@ -1,4 +1,4 @@
-__version__ = "2.10.2"
+__version__ = "2.10.2+pwo.1.crosspage.1"
 __major_version__ = "2"
 __config_file_version__ = "3"
 
