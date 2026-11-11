@@ -2,7 +2,12 @@ name: fork-test
 
 on:
   push:
+    branches: [ "main", "master", "ci/**" ]
+  pull_request:
     branches: [ "main", "master" ]
+
+permissions:
+  contents: read
 
 env:
   REGISTRY: ghcr.io
@@ -21,4 +26,20 @@ jobs:
   test:
     uses: ./.github/workflows/python-test.yml
     needs: check-repository
-    if: needs.check-repository.outputs.is_main_repo != 'true'
+    if: needs.check-repository.outputs.is_main_repo != 'true' && github.repository != 'PWO-CHINA/PDFMathTranslate-next'
+
+  cross-page-contract:
+    if: github.repository == 'PWO-CHINA/PDFMathTranslate-next'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install adapter and baseline engine
+        run: python -m pip install -e . "BabelDOC==0.7.1" "pytest==8.4.2"
+      - name: Check unsupported baseline engine
+        run: python -c "from pdf2zh_next.high_level import supports_experimental_cross_page_context as supported; assert not supported()"
+      - name: Test cross-page public contract without a provider
+        run: python -m pytest -q tests/test_cross_page_setting.py
