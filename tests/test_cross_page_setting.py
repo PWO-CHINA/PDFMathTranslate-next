@@ -137,6 +137,25 @@ def test_incompatible_engine_is_rejected_before_translator_initialization(monkey
         high_level.create_babeldoc_config(settings, Path('synthetic.pdf'))
 
 
+@pytest.mark.parametrize(('python_protocol', 'native_protocol'), [(1, 2), (True, 1), (1, True)])
+def test_protocol_mismatch_is_rejected_before_translator_initialization(
+    monkeypatch, python_protocol, native_protocol
+):
+    from babeldoc import _rust_il
+    from babeldoc.format.pdf import translation_config
+
+    def constructor(*, experimental_cross_page_context=False):
+        pytest.fail(f'incompatible engine constructor called: {experimental_cross_page_context!r}')
+
+    monkeypatch.setattr(high_level, 'BabelDOCConfig', constructor)
+    monkeypatch.setattr(translation_config, 'CROSS_PAGE_SENTENCE_PROTOCOL_VERSION', python_protocol, raising=False)
+    monkeypatch.setattr(_rust_il, 'CROSS_PAGE_SENTENCE_PROTOCOL_VERSION', native_protocol, raising=False)
+    monkeypatch.setattr(high_level, 'get_translator', lambda _settings: pytest.fail('translator initialized'))
+    settings = CLIEnvSettingsModel(translation={'experimental_cross_page_context': True}).to_settings_model()
+    with pytest.raises(RuntimeError, match='required Python and native sentence protocol'):
+        high_level.create_babeldoc_config(settings, Path('synthetic.pdf'))
+
+
 def test_debug_stream_forwards_enabled_setting_to_babeldoc(tmp_path, monkeypatch):
     source = tmp_path / 'synthetic.pdf'
     source.write_bytes(b'%PDF-1.4')
