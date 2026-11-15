@@ -1,6 +1,6 @@
 [project]
 name = "pdf2zh-next"
-version = "2.10.2"
+version = "2.10.2+pwo.security.1"
 description = "PDF Translator based on BabelDOC"
 authors = [
     { name = "awwaawwa", email = "aw@funstory.ai" },
@@ -26,10 +26,9 @@ dependencies = [
     "deepl",
     "openai>=1.0.0",
     "azure-ai-translation-text<=1.0.1",
-    # 5.36 has a bug, webui starts with a white screen
-    "gradio<5.36",
+    "gradio==6.32.0",
     "tencentcloud-sdk-python-tmt",
-    "gradio-pdf>=0.0.21",
+    "gradio-pdf==0.0.24",
     "peewee>=3.17.8",
     "fontTools",
     "babeldoc>=0.7.1,<0.8.0",
@@ -81,8 +80,8 @@ max-line-length = 88
 
 
 [bumpver]
-current_version = "2.10.2"
-version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
+current_version = "2.10.2+pwo.security.1"
+version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]+pwo.security.INC1"
 
 [bumpver.file_patterns]
 "pyproject.toml" = [

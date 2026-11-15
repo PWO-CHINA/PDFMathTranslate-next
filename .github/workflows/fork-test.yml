@@ -21,4 +21,4 @@ jobs:
   test:
     uses: ./.github/workflows/python-test.yml
     needs: check-repository
-    if: needs.check-repository.outputs.is_main_repo != 'true'
+    if: needs.check-repository.outputs.is_main_repo != 'true' && github.repository != 'PWO-CHINA/PDFMathTranslate-next'

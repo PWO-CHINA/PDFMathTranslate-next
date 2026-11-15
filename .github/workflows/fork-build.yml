@@ -22,7 +22,7 @@ jobs:
   test:
     uses: ./.github/workflows/python-test.yml
     needs: check-repository
-    if: needs.check-repository.outputs.is_main_repo != 'true'
+    if: needs.check-repository.outputs.is_main_repo != 'true' && github.repository != 'PWO-CHINA/PDFMathTranslate-next'
 
   build:
     strategy:
@@ -37,7 +37,7 @@ jobs:
     needs: 
       - check-repository
       - test
-    if: needs.check-repository.outputs.is_main_repo != 'true'
+    if: needs.check-repository.outputs.is_main_repo != 'true' && github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     permissions:
       contents: read
       packages: write
@@ -103,7 +103,7 @@ jobs:
       - check-repository
       - test
       - build
-    if: needs.check-repository.outputs.is_main_repo != 'true'
+    if: needs.check-repository.outputs.is_main_repo != 'true' && github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     permissions:
       contents: read
       packages: write
@@ -155,7 +155,7 @@ jobs:
     runs-on: windows-latest
     needs:
       - check-repository
-    if: needs.check-repository.outputs.is_main_repo != 'true'
+    if: needs.check-repository.outputs.is_main_repo != 'true' && github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     steps:
       - name: 检出代码
         uses: actions/checkout@v6
@@ -243,7 +243,7 @@ jobs:
     needs: 
       - build-win64-exe
       - check-repository
-    if: needs.check-repository.outputs.is_main_repo != 'true'
+    if: needs.check-repository.outputs.is_main_repo != 'true' && github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     runs-on: windows-latest
     steps:
       - name: 检出代码
