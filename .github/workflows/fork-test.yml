@@ -36,6 +36,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - name: Verify checked out revision
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -44,18 +45,17 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install adapter and baseline engine
-        run: python -m pip install -e . "BabelDOC==0.7.1" "pytest==8.4.2"
+        run: python -m pip install -e . "BabelDOC==0.7.1" "Pillow==13.0.0" "pytest==8.4.2"
       - name: Check unsupported baseline engine
-        run: python -c "from pdf2zh_next.high_level import supports_experimental_cross_page_context as supported; assert not supported()"
+        run: python tests/check_engine_contract.py baseline
       - name: Test cross-page public contract without a provider
-        run: python -m pytest -q tests/test_cross_page_setting.py
+        run: python tests/run_offline_crosspage_contract.py
       - name: Install hash-pinned experimental engine
-        run: python -m pip install -e . "pytest==8.4.2" "https://github.com/PWO-CHINA/BabelDOC/releases/download/pwo-0.7.1.2-crosspage.17-4001136/babeldoc-0.7.1%2Bpwo.2.crosspage.17-cp310-abi3-win_amd64.whl#sha256=53c82b68c654c3143485b4ec87465be86f954f3b7f62e5ce423004c447bb87e9"
+        run: python -m pip install -e . "Pillow==13.0.0" "pytest==8.4.2" "https://github.com/PWO-CHINA/BabelDOC/releases/download/pwo-0.7.1.2-crosspage.17-4001136/babeldoc-0.7.1%2Bpwo.2.crosspage.17-cp310-abi3-win_amd64.whl#sha256=53c82b68c654c3143485b4ec87465be86f954f3b7f62e5ce423004c447bb87e9"
       - name: Check released engine compatibility
-        run: |
-          python -c "import hashlib; from importlib.metadata import version; from pathlib import Path; from babeldoc import _rust_il; from babeldoc.format.pdf import translation_config; from pdf2zh_next.config.model import TranslationSettings; from pdf2zh_next.high_level import supports_experimental_cross_page_context as supported; markers = (translation_config.CROSS_PAGE_SENTENCE_PROTOCOL_VERSION, _rust_il.CROSS_PAGE_SENTENCE_PROTOCOL_VERSION); assert version('BabelDOC') == '0.7.1+pwo.2.crosspage.17'; assert all(type(value) is int and value == 1 for value in markers); assert supported() is True; assert TranslationSettings().experimental_cross_page_context is False; assert _rust_il.stage_capture_enabled() is False; assert hashlib.sha256(Path(_rust_il.__file__).read_bytes()).hexdigest() == 'ee804d4e686faca9e72725ad0b279649a3ebbee1c027be20939b0f0527e9e938'"
+        run: python tests/check_engine_contract.py release
       - name: Test public contract with the released engine
         run: |
           python -m pip check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -m pytest -q tests/test_cross_page_setting.py
+          python tests/run_offline_crosspage_contract.py

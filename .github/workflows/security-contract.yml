@@ -1,0 +1,40 @@
+name: Security compatibility contract
+
+on:
+  push:
+    branches:
+      - main
+      - fix/pillow13-crosspage-20261116
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-contract:
+    if: github.repository == 'PWO-CHINA/PDFMathTranslate-next'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HF_HUB_OFFLINE: '1'
+      GRADIO_ANALYTICS_ENABLED: 'False'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify checked out revision
+        run: if ((git rev-parse HEAD) -ne $env:EXPECTED_SHA) { throw 'Unexpected checkout revision' }
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install reviewed dependency contract
+        run: python -m pip install -e . 'Pillow==13.0.0' 'https://github.com/PWO-CHINA/BabelDOC/releases/download/pwo-0.7.1.2-crosspage.17-4001136/babeldoc-0.7.1%2Bpwo.2.crosspage.17-cp310-abi3-win_amd64.whl#sha256=53c82b68c654c3143485b4ec87465be86f954f3b7f62e5ce423004c447bb87e9'
+      - name: Check dependency consistency
+        run: python -m pip check
+      - name: Exercise synthetic contract without external connections
+        run: python tests/security_contract.py
