@@ -50,7 +50,7 @@ jobs:
       - name: Test cross-page public contract without a provider
         run: python -m pytest -q tests/test_cross_page_setting.py
       - name: Install hash-pinned experimental engine
-        run: python -m pip install --force-reinstall "https://github.com/PWO-CHINA/BabelDOC/releases/download/pwo-0.7.1.2-crosspage.17-4001136/babeldoc-0.7.1%2Bpwo.2.crosspage.17-cp310-abi3-win_amd64.whl#sha256=53c82b68c654c3143485b4ec87465be86f954f3b7f62e5ce423004c447bb87e9"
+        run: python -m pip install -e . "pytest==8.4.2" "https://github.com/PWO-CHINA/BabelDOC/releases/download/pwo-0.7.1.2-crosspage.17-4001136/babeldoc-0.7.1%2Bpwo.2.crosspage.17-cp310-abi3-win_amd64.whl#sha256=53c82b68c654c3143485b4ec87465be86f954f3b7f62e5ce423004c447bb87e9"
       - name: Check released engine compatibility
         run: |
           python -c "import hashlib; from importlib.metadata import version; from pathlib import Path; from babeldoc import _rust_il; from babeldoc.format.pdf import translation_config; from pdf2zh_next.config.model import TranslationSettings; from pdf2zh_next.high_level import supports_experimental_cross_page_context as supported; markers = (translation_config.CROSS_PAGE_SENTENCE_PROTOCOL_VERSION, _rust_il.CROSS_PAGE_SENTENCE_PROTOCOL_VERSION); assert version('BabelDOC') == '0.7.1+pwo.2.crosspage.17'; assert all(type(value) is int and value == 1 for value in markers); assert supported() is True; assert TranslationSettings().experimental_cross_page_context is False; assert _rust_il.stage_capture_enabled() is False; assert hashlib.sha256(Path(_rust_il.__file__).read_bytes()).hexdigest() == 'ee804d4e686faca9e72725ad0b279649a3ebbee1c027be20939b0f0527e9e938'"
