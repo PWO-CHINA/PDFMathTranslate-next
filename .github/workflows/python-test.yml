@@ -16,6 +16,7 @@ on:
 
 jobs:
   build-and-test:
+    if: github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
