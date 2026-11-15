@@ -81,7 +81,7 @@ max-line-length = 88
 
 [bumpver]
 current_version = "2.10.2+pwo.1.crosspage.2"
-version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]"
+version_pattern = "MAJOR.MINOR.PATCH[.PYTAGNUM]+pwo.1.crosspage.INC1"
 
 [bumpver.file_patterns]
 "pyproject.toml" = [
