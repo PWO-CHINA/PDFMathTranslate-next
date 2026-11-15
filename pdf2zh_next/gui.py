@@ -2385,13 +2385,12 @@ tech_details_string = f"""
                     <br>
                 """
 update_current_languages(settings.gui_settings.ui_lang)
+gui_theme = gr.themes.Default(
+    primary_hue=custom_blue, spacing_size="md", radius_size="lg"
+)
 # The following code creates the GUI
 with gr.Blocks(
     title="PDFMathTranslate - PDF Translation with preserved formats",
-    theme=gr.themes.Default(
-        primary_hue=custom_blue, spacing_size="md", radius_size="lg"
-    ),
-    css=custom_css,
 ) as demo:
     lang_selector = gr.Dropdown(
         choices=LANGUAGES,
@@ -4381,6 +4380,8 @@ def setup_gui(
     if not auth_file or not user_list:
         try:
             demo.launch(
+                theme=gui_theme,
+                css=custom_css,
                 server_name="0.0.0.0",
                 debug=True,
                 inbrowser=inbrowser,
@@ -4394,6 +4395,8 @@ def setup_gui(
             )
             try:
                 demo.launch(
+                    theme=gui_theme,
+                    css=custom_css,
                     server_name="127.0.0.1",
                     debug=True,
                     inbrowser=inbrowser,
@@ -4406,6 +4409,8 @@ def setup_gui(
                     "Error launching GUI using 127.0.0.1.\nThis may be caused by global mode of proxy software."
                 )
                 demo.launch(
+                    theme=gui_theme,
+                    css=custom_css,
                     debug=True,
                     inbrowser=inbrowser,
                     share=True,
@@ -4415,6 +4420,8 @@ def setup_gui(
     else:
         try:
             demo.launch(
+                theme=gui_theme,
+                css=custom_css,
                 server_name="0.0.0.0",
                 debug=True,
                 inbrowser=inbrowser,
@@ -4430,6 +4437,8 @@ def setup_gui(
             )
             try:
                 demo.launch(
+                    theme=gui_theme,
+                    css=custom_css,
                     server_name="127.0.0.1",
                     debug=True,
                     inbrowser=inbrowser,
@@ -4444,6 +4453,8 @@ def setup_gui(
                     "Error launching GUI using 127.0.0.1.\nThis may be caused by global mode of proxy software."
                 )
                 demo.launch(
+                    theme=gui_theme,
+                    css=custom_css,
                     debug=True,
                     inbrowser=inbrowser,
                     share=True,

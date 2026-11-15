@@ -22,6 +22,7 @@ env:
 
 jobs:
   get-latest-release:
+    if: github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     name: Get Latest Release Tag
     runs-on: ubuntu-latest
     outputs:
@@ -40,6 +41,7 @@ jobs:
           echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
 
   test:
+    if: github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     name: Run Python Tests
     needs: get-latest-release
     uses: ./.github/workflows/python-test.yml
@@ -47,6 +49,7 @@ jobs:
       ref: ${{ needs.get-latest-release.outputs.tag }}
 
   build-win64-exe:
+    if: github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     name: Build Windows EXE
     runs-on: windows-latest
     needs: get-latest-release
@@ -193,6 +196,7 @@ jobs:
           include-hidden-files: true
 
   test-win64-exe:
+    if: github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     name: Test Windows EXE
     needs: [build-win64-exe, get-latest-release]
     runs-on: windows-latest
@@ -219,6 +223,7 @@ jobs:
           ./build/pdf2zh.exe ./test/file/translate.cli.text.with.figure.pdf --output ./test/file --bing
 
   build-docker-image:
+    if: github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     name: Build Docker Image
     strategy:
       fail-fast: false
@@ -292,6 +297,7 @@ jobs:
           retention-days: 1
 
   merge-docker-image:
+    if: github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     name: Merge and Push Docker Image
     runs-on: ubuntu-latest
     permissions:
@@ -339,6 +345,7 @@ jobs:
         run: docker buildx imagetools inspect ${{ env.DOCKERHUB_REPO }}:${{ needs.get-latest-release.outputs.tag }}-babeldoc-v${{ needs.build-win64-exe.outputs.babeldoc_version }}
 
   upload-release-asset:
+    if: github.repository != 'PWO-CHINA/PDFMathTranslate-next'
     name: Upload Asset to Release
     needs: [test, test-win64-exe, get-latest-release, build-win64-exe]
     runs-on: ubuntu-latest
@@ -366,4 +373,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ needs.get-latest-release.outputs.tag }} ./*.zip --clobber 
+          gh release upload ${{ needs.get-latest-release.outputs.tag }} ./*.zip --clobber
